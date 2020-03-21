@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block style %}
+    .form {
+        display: grid;
+        justify-content: center;
+        grid-gap: 15px;
+    }
+
+    input[type="submit"] {
+        color: white;
+        background-color: green;
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: darkgreen;
+    }
+{% endblock %}
+
+{% block main %}
+
+    <form action="/register" method="POST" class="form">
+        <input name="username" type="text" placeholder="Username"/>
+        <input name="password" type="password" minlength="8" placeholder="Password">
+        <input name="confirmation" type="password" minlength="8"placeholder="Confirm Password">
+        <input type="submit" value="Register Now">
+    </form>
+
+{% endblock %}

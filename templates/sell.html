@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block style %}
+    .form {
+        display: grid;
+        justify-content: center;
+        grid-gap: 15px;
+    }
+
+    input[type="submit"] {
+        color: white;
+        background-color: green;
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: darkgreen;
+    }
+{% endblock %}
+
+{% block main %}
+
+    <form action="/sell" method="POST" class="form">
+        <input name="symbol" type="text" placeholder="Stock Symbol i.e AAPL"/>
+        <input name="shares" type="number" placeholder="0" min="1" />
+        <input type="submit" value="Sell">
+    </form>
+
+{% endblock %}

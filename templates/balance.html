@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block style %}
+    .form {
+        display: grid;
+        justify-content: center;
+        grid-gap: 15px;
+    }
+
+    input[type="submit"] {
+        color: white;
+        background-color: green;
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: darkgreen;
+    }
+{% endblock %}
+
+{% block main %}
+    <form action="/balance" method="POST" class="form">
+        <p> Your current balance is ${{ cash }}</p>
+        <Label for="amount">Amount:</Label>
+        <input name="amount" type="number" min="0.01" step="0.01" value="$2500.00" />
+        <input type="submit" value="Add Money">
+    </form>
+
+{% endblock %}

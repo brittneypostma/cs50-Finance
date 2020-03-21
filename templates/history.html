@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block style %}
+    .tables {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-between;
+        align-items: flex-start;
+        grid-gap: 1em;
+    }
+    table {
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+      text-align: center;
+    }
+
+    td, th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2;}
+
+    tr:hover {background-color: #ddd;}
+
+    th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .tables {
+            grid-template-columns: 1fr;
+        }
+    }
+{% endblock %}
+
+{% block main %}
+    <div class="tables">
+        <table>
+            <tr>
+                <th colspan=3>Buys</th>
+
+            </tr>
+            <tr>
+                <td>Stock Symbol</td>
+                <td>Shares</td>
+                <td>Date and Time</td>
+            </tr>
+
+            {% for buy in buys %}
+                <tr>
+                    <td>
+                        {{ buy["symbol"] }}
+                    </td>
+                    <td>
+                        {{ buy["shares"] }}
+                    </td>
+                    <td>
+                        {{ buy["datetime"] }}
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </table>
+        <table>
+            <tr>
+                <th colspan=3>Sells</th>
+            </tr>
+            <tr>
+                <td>Stock Symbol</td>
+                <td>Shares</td>
+                <td>Date and Time</td>
+            </tr>
+            {% for sell in sells %}
+                <tr>
+                    <td>
+                        {{ sell["symbol"] }}
+                    </td>
+                    <td>
+                        {{ sell["shares"] }}
+                    </td>
+                    <td>
+                        {{ sell["datetime"] }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+{% endblock %}

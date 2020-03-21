@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block style %}
+    table {
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+      text-align: center;
+    }
+
+    td, th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2;}
+
+    tr:hover {background-color: #ddd;}
+
+    th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      background-color: #4CAF50;
+      color: white;
+    }
+{% endblock %}
+
+{% block main %}
+
+    <table>
+        <tr>
+            <th>Stock Symbol</th>
+            <th>Company Name</th>
+            <th>Shares</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+
+            {% if quotes %}
+
+                {% for quote in quotes %}
+                <tr>
+                    <td>
+                        {{ quote["symbol"] }}
+                    </td>
+                    <td>
+                        {{ quote["name"] }}
+                    </td>
+                    <td>
+                        {{ quote["shares"] }}
+                    </td>
+                    <td>
+                        {{ quote["price"] | usd }}
+                    </td>
+                    <td>
+                        {{ quote["total"] | usd }}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            {% else %}
+                <tr>
+                    <td colspan=5>You have no holdings, go <a href="/buy">BUY</a> some!</td>
+                </tr>
+            {% endif %}
+
+        <tr style="background-color: transparent; border-top: 2px solid black;">
+            <td colspan=3 style="border: none;"></td>
+            <td style="border: none; font-weight: bold; text-align: right;">CASH</td>
+            <td style="border: 2px solid black;">
+                {{ users[0]["cash"] | usd }}
+            </td>
+        </tr>
+        <tr style="background-color: transparent;">
+            <td colspan=3 style="border: none;"></td>
+            <td style="border: none; font-weight: bold; text-align: right;">Total Holdings</td>
+            <td style="border: 2px solid black; font-weight: bold;">{{ total | usd }}</td>
+        </tr>
+
+
+    </table>
+
+
+{% endblock %}
