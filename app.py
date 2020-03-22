@@ -47,8 +47,8 @@ if not os.environ.get("API_KEY"):
 def index():
     """Show portfolio of stocks"""
 
-    rows = db.execute("SELECT symbol, shares FROM holdings WHERE user_id = ?", session["user_id"])
-    users = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
+    rows = db.execute("SELECT symbol, shares FROM holdings WHERE user_id = ?", (session["user_id"]))
+    users = db.execute("SELECT cash FROM users WHERE id = ?", (session["user_id"]))
     cash = users[0]["cash"]
     value = 0
     quotes = []
@@ -108,7 +108,7 @@ def buy():
         totalShares = 0
 
         # Query db for users cash
-        users = db.execute("SELECT cash FROM users WHERE id = :user", user=user)
+        users = db.execute("SELECT cash FROM users WHERE id = ?", (user))
 
         cash = users[0]["cash"]
 
@@ -128,11 +128,11 @@ def buy():
                 else:
                     # Add symbol, shares to holdings
                     db.execute("INSERT INTO holdings (user_id, symbol, shares) VALUES(?, ?, ?)",
-                               user, symbol, updShares)
+                               (user, symbol, updShares))
 
         else:
             db.execute("INSERT INTO holdings (user_id, symbol, shares) VALUES(?, ?, ?)",
-                       user, symbol, shares)
+                       (user, symbol, shares))
 
         if not cash > total:
             return apology("Sorry, you do not have enough cash to complete transaction.", 403)
@@ -140,11 +140,11 @@ def buy():
         else:
             # Update cash in users to new value
             newCash = cash - total
-            db.execute("UPDATE users SET cash = :newCash WHERE id = :user",
-                       newCash=newCash, user=user)
+            db.execute("UPDATE users SET cash = ? WHERE id = ?",
+                       (newCash, user))
             # Insert buy into buy table
             db.execute("INSERT INTO buy (user_id, symbol, shares) VALUES(?, ?, ?)",
-                       user, symbol, shares)
+                       (user, symbol, shares))
 
         # render template quoted with quote
         return redirect("/")
@@ -160,10 +160,10 @@ def history():
     user = session["user_id"]
 
     # Query for buys
-    buys = db.execute("SELECT * FROM buy WHERE user_id = :user", user=user)
+    buys = db.execute("SELECT * FROM buy WHERE user_id = ?", (user))
 
     # Query for sells
-    sells = db.execute("SELECT * FROM sell WHERE user_id = :user", user=user)
+    sells = db.execute("SELECT * FROM sell WHERE user_id = ?", (user))
 
     # render template quoted with quote
     return render_template("history.html", buys=buys, sells=sells)
@@ -188,8 +188,8 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=request.form.get("username"))
+        rows = db.execute("SELECT * FROM users WHERE username = ?",
+                         (request.form.get("username")))
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
@@ -263,8 +263,8 @@ def register():
             return apology("passwords do not match", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=name)
+        rows = db.execute("SELECT * FROM users WHERE username = ?",
+                          (name))
 
         # Check if username exists
         if len(rows) > 0:
@@ -274,7 +274,7 @@ def register():
         hashedPw = generate_password_hash(pw)
 
         # Insert into db
-        db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=name, hash=hashedPw)
+        db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (name, hashedPw))
 
 
         # Login user
@@ -321,12 +321,12 @@ def sell():
             return apology("Shares must be a positive number.", 403)
 
         # Query db for users cash
-        query = db.execute("SELECT cash FROM users WHERE id = :user", user=user)
+        query = db.execute("SELECT cash FROM users WHERE id = ?", (user))
 
         cash = query[0]["cash"]
 
         # Query holdings for symbol, shares
-        holdings = db.execute("SELECT symbol, shares FROM holdings WHERE user_id = ?", user)
+        holdings = db.execute("SELECT symbol, shares FROM holdings WHERE user_id = ?", (user))
 
         # Check if holdings exists
         if len(holdings) != 0:
@@ -336,10 +336,10 @@ def sell():
                 updShares = totalShares - shares
                 # Sell shares
                 db.execute("INSERT INTO sell (user_id, symbol, shares) VALUES(?, ?, ?)",
-                           user, symbol, shares)
+                           (user, symbol, shares))
                 # Update holdings
                 db.execute("UPDATE holdings SET shares = ? WHERE user_id = ? AND symbol = ?",
-                           updShares, user, symbol)
+                           (updShares, user, symbol))
 
             else:
                 return apology("Sorry, you do not have that many shares.", 403)
@@ -361,7 +361,7 @@ def balance():
     user = session["user_id"]
 
    # Query for cash
-    query = db.execute("SELECT cash FROM users WHERE id = :user", user=user)
+    query = db.execute("SELECT cash FROM users WHERE id = ?", (user))
     cash = query[0]["cash"]
 
     if request.method == "POST":
@@ -372,7 +372,7 @@ def balance():
         totalCash = int(amount) + int(cash)
 
         # Add cash
-        db.execute("UPDATE users SET cash = :totalCash WHERE id = :user", totalCash=totalCash, user=user)
+        db.execute("UPDATE users SET cash = ? WHERE id = ?", (totalCash, user))
 
         return redirect("/")
 
