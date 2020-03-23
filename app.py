@@ -46,10 +46,9 @@ if not os.environ.get("API_KEY"):
 @login_required
 def index():
     """Show portfolio of stocks"""
-
-    rows = db.execute("SELECT symbol, shares FROM holdings WHERE user_id = ?", (session["user_id"]))
-    users = db.execute("SELECT cash FROM users WHERE id = ?", (session["user_id"]))
-    cash = users[0]["cash"]
+    rows = db.execute("SELECT symbol, shares FROM holdings WHERE user_id = ?", (session["user_id"],)).fetchall()
+    users = db.execute("SELECT cash FROM users WHERE id = ?", (session["user_id"],)).fetchall()
+    cash = users[0][0]
     value = 0
     quotes = []
 
@@ -188,14 +187,16 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
+        query = db.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        row = query.fetchall()
+        hashed_pwd = row[0][2]
+        if len(row) == 0 or not check_password_hash(hashed_pwd, request.form.get("password")):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = row[0][0]
 
         # Redirect user to home page
         return redirect("/")
@@ -263,10 +264,10 @@ def register():
 
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = ?",
-                          (name))
+                          (name,))
 
         # Check if username exists
-        if len(rows) > 0:
+        if len(rows.fetchall()) > 0:
             return apology("username taken")
 
         # Hash the password
@@ -274,7 +275,7 @@ def register():
 
         # Insert into db
         db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (name, hashedPw))
-
+        conn.commit()
 
         # Login user
         login()
